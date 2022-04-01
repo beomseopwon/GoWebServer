@@ -1,0 +1,28 @@
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /v1/health:
+    get:
+      consumes:
+      - application/json
+      description: 서버가 살아 있는 확인
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: 서버 상태 체크
+      tags:
+      - Status
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

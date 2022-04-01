@@ -1,0 +1,12 @@
+server:
+  addr : "localhost:8080"
+wemix :
+  binder :
+    url : "https://dev-binder.wemix.co/"
+  vks :
+    url : "https://dev-vks.wemix.co/"
+  webauth:
+    url : "https://dev-webauth.wemix.co/"
+  auth :
+    url : "https://dev-oauth.wemix.co/"
+   
