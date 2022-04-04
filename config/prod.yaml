@@ -2,15 +2,14 @@ server:
   addr : "localhost:8080"
 wemix :
   binder :
-    url : "https://dev-binder.wemix.co/"
+    url : "https://stg-binder.wemixnetwork.com/"
   vks :
     url : "https://dev-vks.wemix.co/"
   webauth:
-    url : "https://dev-webauth.wemix.co/"
+    url : "https://stg-webauth.wemixnetwork.com/"
   oauth :
-    url : "https://dev-oauth.wemix.co/"
+    url : "https://stg-oauth.wemixnetwork.com/"
 token :
   chainName  : "tornado"
   contractName  : "TornadoToken"
-
    

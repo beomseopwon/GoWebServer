@@ -6,4 +6,5 @@ import (
 
 func InitRoutes(r *gin.RouterGroup) {
 	SetHealthRoutes(r)
+	SetTokenRoutes(r)
 }
