@@ -2,6 +2,7 @@ package v1
 
 import (
 	"GoWebServer/client"
+	"GoWebServer/dto"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,30 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type BalanceOfReqData struct {
-	ChainName    string `json:"chainName"`
-	ContractName string `json:"contractName"`
-	Address      string `json:"address"`
-}
-
-type TokenReqData struct {
-	ChainName    string `json:"chainName"`
-	ContractName string `json:"contractName"`
-	TokenId      string `json:"tokenid"`
-}
-
-// type BalanceOfResData struct {
-// 	Jsonrpc string `json:"jsonrpc"`
-// 	ID      int    `json:"id"`
-// 	Result  string `json:"result"`
-// }
-
-// type TokensOfOwnerResData struct {
-// 	Jsonrpc string     `json:"jsonrpc"`
-// 	ID      int        `json:"id"`
-// 	Result  [][]string `json:"result"`
-// }
-
 // Status godoc
 // @Summary      서버 상태 체크
 // @Description  서버가 살아 있는 확인
@@ -43,16 +20,14 @@ type TokenReqData struct {
 // @Accept       json
 // @Produce      json
 // @Success      200
-// @Router       /v1/balanceof [get]
-
+// @Router       /v1/balanceof [post]
 func BalanceOf(context *gin.Context) {
 	body := context.Request.Body
 	value, err := ioutil.ReadAll(body)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-
-	var data BalanceOfReqData
+	var data dto.ReqBalanceOfDTO
 	json.Unmarshal([]byte(value), &data)
 	response, err := (*client.RPCClient()).Call(c.Background(), "token_balanceOf", data.ChainName, data.ContractName, data.Address)
 	if err != nil {
@@ -68,6 +43,14 @@ func BalanceOf(context *gin.Context) {
 	}
 }
 
+// Status godoc
+// @Summary      보유중인 모든 토큰
+// @Description  보유중인 모든 토큰
+// @Tags         Status
+// @Accept       json
+// @Produce      json
+// @Success      200
+// @Router       /v1/tokesnofowner [post]
 func TokensOfOwner(context *gin.Context) {
 	body := context.Request.Body
 	value, err := ioutil.ReadAll(body)
@@ -75,7 +58,7 @@ func TokensOfOwner(context *gin.Context) {
 		fmt.Println(err.Error())
 	}
 
-	var data BalanceOfReqData
+	var data dto.ReqBalanceOfDTO
 	json.Unmarshal([]byte(value), &data)
 	response, err := (*client.RPCClient()).Call(c.Background(), "token_tokensOfOwner", data.ChainName, data.ContractName, data.Address)
 	if err != nil {
@@ -91,6 +74,14 @@ func TokensOfOwner(context *gin.Context) {
 	}
 }
 
+// Status godoc
+// @Summary      nft 토큰의 uri 정보
+// @Description  nft 토큰의 uri 정보
+// @Tags         Status
+// @Accept       json
+// @Produce      json
+// @Success      200
+// @Router       /v1/tokenuri [post]
 func TokenURI(context *gin.Context) {
 	body := context.Request.Body
 	value, err := ioutil.ReadAll(body)
@@ -98,7 +89,7 @@ func TokenURI(context *gin.Context) {
 		fmt.Println(err.Error())
 	}
 
-	var data TokenReqData
+	var data dto.ReqTokenDTO
 	json.Unmarshal([]byte(value), &data)
 	response, err := (*client.RPCClient()).Call(c.Background(), "token_tokenURI", data.ChainName, data.ContractName, data.TokenId)
 	if err != nil {

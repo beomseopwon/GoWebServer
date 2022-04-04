@@ -6,6 +6,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 func NewRouter() *gin.Engine {
@@ -26,8 +29,9 @@ func NewRouter() *gin.Engine {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	routerGroupV1 := router.Group("/v1")
-	v1.BindRoutes(routerGroupV1)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	v1.BindRoutes(router)
 
 	return router
 }

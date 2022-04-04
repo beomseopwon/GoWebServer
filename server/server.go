@@ -3,9 +3,6 @@ package server
 import (
 	"net/http"
 	"time"
-
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 func Init(addr string) {
@@ -17,6 +14,5 @@ func Init(addr string) {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	server.ListenAndServe()
 }
