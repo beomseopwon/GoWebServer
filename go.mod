@@ -23,6 +23,7 @@ require (
 	github.com/ugorji/go v1.2.7 // indirect
 	github.com/urfave/cli/v2 v2.4.0 // indirect
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
+	github.com/ybbus/jsonrpc/v3 v3.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20220331220935-ae2d96664a29 // indirect
 	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
 	golang.org/x/sys v0.0.0-20220403205710-6acee93ad0eb // indirect

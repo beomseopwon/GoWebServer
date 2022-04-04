@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoWebServer/client"
 	"GoWebServer/config"
 	"GoWebServer/docs"
 	"GoWebServer/server"
@@ -33,5 +34,6 @@ func main() {
 	}
 	flag.Parse()
 	config.Init(*env)
-	server.Init()
+	client.InitBinder(config.Config().GetString("wemix.binder"))
+	server.Init(config.Config().GetString("server.addr"))
 }

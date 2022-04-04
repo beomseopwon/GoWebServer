@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.RouterGroup) {
-	SetHealthRoutes(r)
-	SetTokenRoutes(r)
+func BindRoutes(r *gin.RouterGroup) {
+	BindHealthRoutes(r)
+	BindTokenRoutes(r)
 }

@@ -27,7 +27,7 @@ func NewRouter() *gin.Engine {
 	router.Use(gin.Recovery())
 
 	routerGroupV1 := router.Group("/v1")
-	v1.InitRoutes(routerGroupV1)
+	v1.BindRoutes(routerGroupV1)
 
 	return router
 }

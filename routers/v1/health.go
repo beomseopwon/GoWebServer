@@ -6,6 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetHealthRoutes(router *gin.RouterGroup) {
+func BindHealthRoutes(router *gin.RouterGroup) {
 	router.GET("/health", v1.Status)
 }

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"GoWebServer/config"
 	"net/http"
 	"time"
 
@@ -9,11 +8,10 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
-func Init() {
-	config := config.Config()
+func Init(addr string) {
 	router := NewRouter()
 	server := &http.Server{
-		Addr:           config.GetString("server.addr"),
+		Addr:           addr,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,

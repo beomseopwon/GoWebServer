@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetTokenRoutes(router *gin.RouterGroup) {
+func BindTokenRoutes(router *gin.RouterGroup) {
 	router.POST("/balanceof", v1.BalanceOf)
+	router.POST("/tokesnofowner", v1.TokensOfOwner)
+	router.POST("/tokenuri", v1.TokenURI)
 }
