@@ -24,4 +24,5 @@ type ResContractAddressDTO struct {
 type ResContractRecoverMessageDTO struct {
 	SignHash string `json:"signHash"`
 	Address  string `json:"address"`
+	Nonce    string `json:"nonce"`
 }

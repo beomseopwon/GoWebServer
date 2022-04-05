@@ -2,6 +2,7 @@ package v1
 
 import (
 	"GoWebServer/client"
+	"GoWebServer/config"
 	"GoWebServer/dtos"
 	c "context"
 	"encoding/json"
@@ -11,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
 )
 
 // Status godoc
@@ -73,9 +75,9 @@ func ContractRecoverMessage(context *gin.Context) {
 	json.Unmarshal([]byte(value), &reqData)
 	messages := []Message{
 		Message{"address", "0x428bf6d6644a57eb4cc393ab8c643e33c9421106"},
-		Message{"uint256", "0"},
+		Message{"uint", "0"},
 		Message{"address", "0xf3e2467c29a3d316d3270dd9bfa89acc1878ee84"},
-		Message{"uint256", "0"},
+		Message{"uint", "0"},
 		Message{"bool", "false"},
 	}
 	response, err := (*client.BinderClient()).Call(c.Background(), "contract_recoverMessage", messages, reqData.SignHash)
@@ -89,12 +91,127 @@ func ContractRecoverMessage(context *gin.Context) {
 		}
 		if strings.Compare(result, reqData.Address) == 0 {
 			fmt.Println("validate address", "true")
-			VksSignMessage(context)
+			ContractSoliditySHA3(context, reqData.Address, reqData.SignHash)
+			return
 		}
 		context.IndentedJSON(http.StatusBadRequest, "")
 	}
 }
 
-func VksSignMessage(context *gin.Context) {
+func ContractSoliditySHA3(context *gin.Context, userAddress string, userSignHash string) {
+	messages := [1][2]Message{}
+	messages[0][0].Type = "string"
+	messages[0][0].Value = "/pmembership.json"
+	messages[0][1].Type = "bytes"
+	messages[0][1].Value = userSignHash
+	response, err := (*client.BinderClient()).Call(c.Background(), "contract_soliditySHA3", messages)
+	if err != nil {
+		fmt.Println("contract_soliditySHA3 err ", err.Error())
+	} else {
+		result, err := response.GetString()
+		if err != nil {
+			fmt.Println("contract_soliditySHA3 err ", err.Error())
+			context.IndentedJSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		fmt.Println("contract_soliditySHA3 ssc", result)
+		VksSignMessage(context, userAddress, userSignHash, result)
+	}
+}
 
+func VksSignMessage(context *gin.Context, userAddress string, userSignHash string, soliditySHA3 string) {
+
+	client := resty.New()
+	res, err := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetAuthToken(config.Config().GetString("wemix.vks.jwttoken")).
+		SetBody(map[string]string{
+			"messageHash": soliditySHA3,
+		}).
+		Post(config.Config().GetString("wemix.vks.url") + "sign/message")
+
+	if err != nil {
+		fmt.Println("VksSignMessage err", err.Error())
+		context.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var vksResult struct {
+		Result string `json:"result"`
+	}
+	json.Unmarshal(res.Body(), &vksResult)
+	fmt.Println("VksSignMessage", vksResult.Result)
+	TxSendUnsignedTx(context, "0", userAddress, userSignHash, vksResult.Result, "0")
+}
+
+// {
+//     "jsonrpc": "2.0",
+//     "id": "",
+//     "method": "tx_sendUnsignedTx",
+//     "params": [
+//         "tornado",
+//         "SampleERC721",
+//         "mint",
+//         [
+//             "0",
+//             "0xc32e7a0ba3922fafd516b2cb9fd3ef17e539f8fd",
+//             "0",
+//             "false",
+//             "nft/comm/1900101.json",
+//             "0x8c33e0adf7765bd8f58170bc15d3aadfaa4d0b279ef5276362a4ab83ff5e0a383a4ab31e7bd3bed22eb43f17dc42fc28f5e79b512737cb516ebc97f4fd408f8a1b",
+//             "0xed8ea4a7d53f23eb9c98af6d1984abae62dcb84e2773d46baed117cc931c1a097733d1e459581224bae082d1ce7a18f45d118b70f10800488aa81b289a18056d1c"
+//         ]
+//     ]
+// }
+
+type MintResult struct {
+	Status uint   `json:"status"`
+	TxHash string `json:"txhash"`
+	Revert Revert `json:"revert"`
+}
+
+type Revert struct {
+	Message string `json:"message"`
+}
+
+func TxSendUnsignedTx(context *gin.Context, fee string, userAddress string, userSign string, vksSign string, nonce string) {
+	strParam := []string{
+		fee,
+		userAddress,
+		nonce,
+		"false",
+		"/pmembership.json",
+		userSign,
+		vksSign,
+	}
+	a, _ := json.Marshal(strParam)
+	fmt.Println(string(a))
+	response, err := (*client.BinderClient()).Call(c.Background(), "tx_sendUnsignedTx", "tornado", "SampleERC721", "mint", strParam)
+	if err != nil {
+		fmt.Println("TxSendUnsignedTx err ", err.Error())
+		context.IndentedJSON(http.StatusInternalServerError, err.Error())
+	} else {
+
+		var ma *MintResult
+		aerr := response.GetObject(&ma)
+		if aerr != nil {
+			fmt.Println("TxSendUnsignedTx aerr ", aerr.Error())
+		} else {
+
+			fmt.Println("TxSendUnsignedTx Result ", response.Result)
+			fmt.Println("TxSendUnsignedTx TxHash ", ma.TxHash)
+			fmt.Println("TxSendUnsignedTx Revert.Message ", ma.Revert.Message)
+		}
+
+		// result, err := response.GetString()
+		// if err != nil {
+		// 	fmt.Println("TxSendUnsignedTx err ", err.Error())
+		// 	context.IndentedJSON(http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
+		// fmt.Println("TxSendUnsignedTx ssc", result)
+		// context.IndentedJSON(http.StatusOK, map[string]string{
+		// 	"result": "success",
+		// })
+	}
 }
