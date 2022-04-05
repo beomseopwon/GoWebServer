@@ -2,7 +2,7 @@ package v1
 
 import (
 	"GoWebServer/client"
-	"GoWebServer/dto"
+	"GoWebServer/dtos"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -27,9 +27,9 @@ func BalanceOf(context *gin.Context) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	var data dto.ReqBalanceOfDTO
+	var data dtos.ReqBalanceOfDTO
 	json.Unmarshal([]byte(value), &data)
-	response, err := (*client.RPCClient()).Call(c.Background(), "token_balanceOf", data.ChainName, data.ContractName, data.Address)
+	response, err := (*client.BinderClient()).Call(c.Background(), "token_balanceOf", data.ChainName, data.ContractName, data.Address)
 	if err != nil {
 		fmt.Println("token_balanceOf err ", err.Error())
 	} else {
@@ -38,7 +38,7 @@ func BalanceOf(context *gin.Context) {
 			context.String(http.StatusInternalServerError, err.Error())
 			return
 		}
-		context.String(http.StatusOK, result)
+		context.JSON(http.StatusOK, result)
 		fmt.Println("token_balanceOf response ", result)
 	}
 }
@@ -58,19 +58,19 @@ func TokensOfOwner(context *gin.Context) {
 		fmt.Println(err.Error())
 	}
 
-	var data dto.ReqBalanceOfDTO
+	var data dtos.ReqBalanceOfDTO
 	json.Unmarshal([]byte(value), &data)
-	response, err := (*client.RPCClient()).Call(c.Background(), "token_tokensOfOwner", data.ChainName, data.ContractName, data.Address)
+	response, err := (*client.BinderClient()).Call(c.Background(), "token_tokensOfOwner", data.ChainName, data.ContractName, data.Address)
 	if err != nil {
 		fmt.Println("token_tokensOfOwner err ", err.Error())
 	} else {
 		result, err := response.GetString()
 		if err != nil {
-			context.String(http.StatusInternalServerError, err.Error())
+			context.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 		fmt.Println("token_tokensOfOwner response ", result)
-		context.String(http.StatusOK, result)
+		context.JSON(http.StatusOK, result)
 	}
 }
 
@@ -89,18 +89,18 @@ func TokenURI(context *gin.Context) {
 		fmt.Println(err.Error())
 	}
 
-	var data dto.ReqTokenDTO
+	var data dtos.ReqTokenDTO
 	json.Unmarshal([]byte(value), &data)
-	response, err := (*client.RPCClient()).Call(c.Background(), "token_tokenURI", data.ChainName, data.ContractName, data.TokenId)
+	response, err := (*client.BinderClient()).Call(c.Background(), "token_tokenURI", data.ChainName, data.ContractName, data.TokenId)
 	if err != nil {
 		fmt.Println("token_tokenURI err ", err.Error())
 	} else {
 		result, err := response.GetString()
 		if err != nil {
-			context.String(http.StatusInternalServerError, err.Error())
+			context.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 		fmt.Println("token_tokenURI response ", result)
-		context.String(http.StatusOK, result)
+		context.JSON(http.StatusOK, result)
 	}
 }

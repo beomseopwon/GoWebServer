@@ -9,4 +9,6 @@ func BindRoutes(r *gin.Engine) {
 	BindHealthRoutes(rootGroup)
 	tokenGroup := rootGroup.Group("/token")
 	BindTokenRoutes(tokenGroup)
+	contractGroup := rootGroup.Group("/contract")
+	BindContractRoutes(contractGroup)
 }

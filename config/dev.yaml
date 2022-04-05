@@ -2,7 +2,9 @@ server:
   addr : "localhost:8080"
 wemix :
   binder : "https://dev-binder.wemix.co/"
-  vks : "https://dev-vks.wemix.co/"
+  vks :
+    uri : "https://dev-vks.wemix.co/"
+    jwttoken : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQxMzM4OTQ0MDAsImlhdCI6MTYyOTQyNDI5Mn0.HkTFHEIDpm4Cb31k-a2IiIlH2iYprcIdqilXlCSzFMA"
   webauth: "https://dev-webauth.wemix.co/"
   oauth :  "https://dev-oauth.wemix.co/"
 

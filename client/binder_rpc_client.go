@@ -8,6 +8,6 @@ func InitBinder(endpoint string) {
 	rpcClient = jsonrpc.NewClient(endpoint)
 }
 
-func RPCClient() *jsonrpc.RPCClient {
+func BinderClient() *jsonrpc.RPCClient {
 	return &rpcClient
 }
