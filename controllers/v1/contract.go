@@ -74,10 +74,10 @@ func ContractRecoverMessage(context *gin.Context) {
 	var reqData dtos.ResContractRecoverMessageDTO
 	json.Unmarshal([]byte(value), &reqData)
 	messages := []Message{
-		Message{"address", "0x428bf6d6644a57eb4cc393ab8c643e33c9421106"},
+		Message{"address", reqData.ContractAddress},
 		Message{"uint", "0"},
-		Message{"address", "0xf3e2467c29a3d316d3270dd9bfa89acc1878ee84"},
-		Message{"uint", "0"},
+		Message{"address", reqData.Address},
+		Message{"uint", reqData.Nonce},
 		Message{"bool", "false"},
 	}
 	response, err := (*client.BinderClient()).Call(c.Background(), "contract_recoverMessage", messages, reqData.SignHash)
@@ -89,19 +89,21 @@ func ContractRecoverMessage(context *gin.Context) {
 			context.IndentedJSON(http.StatusInternalServerError, err.Error())
 			return
 		}
+		fmt.Println("contract_recoverMessage result", result)
+		fmt.Println("contract_recoverMessage Address", reqData.Address)
 		if strings.Compare(result, reqData.Address) == 0 {
-			fmt.Println("validate address", "true")
-			ContractSoliditySHA3(context, reqData.Address, reqData.SignHash)
+			fmt.Println("validate address Compare", "true")
+			ContractSoliditySHA3(context, reqData.Address, reqData.SignHash, reqData.Nonce)
 			return
 		}
 		context.IndentedJSON(http.StatusBadRequest, "")
 	}
 }
 
-func ContractSoliditySHA3(context *gin.Context, userAddress string, userSignHash string) {
+func ContractSoliditySHA3(context *gin.Context, userAddress string, userSignHash string, userNonce string) {
 	messages := [1][2]Message{}
 	messages[0][0].Type = "string"
-	messages[0][0].Value = "/pmembership.json"
+	messages[0][0].Value = "/ftfish0.json"
 	messages[0][1].Type = "bytes"
 	messages[0][1].Value = userSignHash
 	response, err := (*client.BinderClient()).Call(c.Background(), "contract_soliditySHA3", messages)
@@ -114,17 +116,38 @@ func ContractSoliditySHA3(context *gin.Context, userAddress string, userSignHash
 			context.IndentedJSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-		fmt.Println("contract_soliditySHA3 ssc", result)
-		VksSignMessage(context, userAddress, userSignHash, result)
+		fmt.Println("contract_soliditySHA3 sh3", result)
+		fmt.Println("contract_soliditySHA3 userSignHash", userSignHash)
+		VksSignMessage(context, userAddress, userSignHash, userNonce, result)
 	}
 }
 
-func VksSignMessage(context *gin.Context, userAddress string, userSignHash string, soliditySHA3 string) {
+// func VksSignMessage(context *gin.Context, userAddress string, userSignHash string, soliditySHA3 string) {
+// 	response, err := (*client.VKSClient()).Call(c.Background(), "sign_signMessage", soliditySHA3)
+// 	if err != nil {
+// 		fmt.Println("VksSignMessage err ", err.Error())
+// 	} else {
+// 		// result, err :=
+// 		// if err != nil {
+// 		// 	fmt.Println("VksSignMessage err ", err.Error())
+// 		// 	context.IndentedJSON(http.StatusInternalServerError, err.Error())
+// 		// 	return
+// 		// }
+// 		fmt.Println("VksSignMessage success ", response.Result)
+// 		// var vksResult struct {
+// 		// 	Result string `json:"result"`
+// 		// }
+// 		// json.Unmarshal(res.Body(), &result)
+// 		// fmt.Println("VksSignMessage", vksResult.Result)
+// 	}
+// }
 
-	client := resty.New()
-	res, err := client.R().
+func VksSignMessage(context *gin.Context, userAddress string, userSignHash string, userNonce string, soliditySHA3 string) {
+
+	restyClient := resty.New()
+	res, err := restyClient.R().
 		SetHeader("Content-Type", "application/json").
-		SetAuthToken(config.Config().GetString("wemix.vks.jwttoken")).
+		SetAuthToken(config.Config().GetString("wemix.vks.jwt")).
 		SetBody(map[string]string{
 			"messageHash": soliditySHA3,
 		}).
@@ -141,7 +164,7 @@ func VksSignMessage(context *gin.Context, userAddress string, userSignHash strin
 	}
 	json.Unmarshal(res.Body(), &vksResult)
 	fmt.Println("VksSignMessage", vksResult.Result)
-	TxSendUnsignedTx(context, "0", userAddress, userSignHash, vksResult.Result, "0")
+	TxSendUnsignedTx(context, "0", userAddress, userSignHash, vksResult.Result, userNonce)
 }
 
 // {
@@ -180,7 +203,7 @@ func TxSendUnsignedTx(context *gin.Context, fee string, userAddress string, user
 		userAddress,
 		nonce,
 		"false",
-		"/pmembership.json",
+		"/ftfish0.json",
 		userSign,
 		vksSign,
 	}

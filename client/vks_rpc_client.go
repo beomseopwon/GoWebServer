@@ -1,13 +1,18 @@
 package client
 
-// import "github.com/ybbus/jsonrpc/v3"
+import "github.com/ybbus/jsonrpc/v3"
 
-// var rpcClient jsonrpc.RPCClient
+var vksClient jsonrpc.RPCClient
 
-// func InitBinder(endpoint string) {
-// 	rpcClient = jsonrpc.NewClient(endpoint)
-// }
+func InitVKS(endpoint string, jwt string) {
+	vksClient = jsonrpc.NewClientWithOpts(endpoint, &jsonrpc.RPCClientOpts{
+		CustomHeaders: map[string]string{
+			"Authorization": "Bearere " + jwt,
+		},
+		AllowUnknownFields: true,
+	})
+}
 
-// func RPCClient() jsonrpc.RPCClient {
-// 	return rpcClient
-// }
+func VKSClient() *jsonrpc.RPCClient {
+	return &vksClient
+}

@@ -35,5 +35,6 @@ func main() {
 	flag.Parse()
 	config.Init(*env)
 	client.InitBinder(config.Config().GetString("wemix.binder"))
+	client.InitVKS(config.Config().GetString("wemix.vks.url"), config.Config().GetString("wemix.vks.jwt"))
 	server.Init(config.Config().GetString("server.addr"))
 }

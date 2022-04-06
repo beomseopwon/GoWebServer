@@ -2,12 +2,12 @@ package client
 
 import "github.com/ybbus/jsonrpc/v3"
 
-var rpcClient jsonrpc.RPCClient
+var binderClient jsonrpc.RPCClient
 
 func InitBinder(endpoint string) {
-	rpcClient = jsonrpc.NewClient(endpoint)
+	binderClient = jsonrpc.NewClient(endpoint)
 }
 
 func BinderClient() *jsonrpc.RPCClient {
-	return &rpcClient
+	return &binderClient
 }

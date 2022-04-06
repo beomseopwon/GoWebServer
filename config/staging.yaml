@@ -4,6 +4,6 @@ wemix :
   binder :  "https://stg-binder.wemixnetwork.com/"
   vks :
     url : "https://dev-vks-rest.wemix.co/"
-    jwttoken : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQxMzM4OTQ0MDAsImlhdCI6MTYyOTQyNDI5Mn0.HkTFHEIDpm4Cb31k-a2IiIlH2iYprcIdqilXlCSzFMA"
+    jwt : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQxMzM4OTQ0MDAsImlhdCI6MTYyOTQyNDI5Mn0.HkTFHEIDpm4Cb31k-a2IiIlH2iYprcIdqilXlCSzFMA"
   webauth: "https://stg-webauth.wemixnetwork.com/"
   oauth :  "https://stg-oauth.wemixnetwork.com/"
