@@ -78,7 +78,7 @@ func ContractRecoverMessage(context *gin.Context) {
 		Message{"uint", "0"},
 		Message{"address", reqData.Address},
 		Message{"uint", reqData.Nonce},
-		Message{"bool", "false"},
+		Message{"bool", "true"},
 	}
 	response, err := (*client.BinderClient()).Call(c.Background(), "contract_recoverMessage", messages, reqData.SignHash)
 	if err != nil {
@@ -103,7 +103,7 @@ func ContractRecoverMessage(context *gin.Context) {
 func ContractSoliditySHA3(context *gin.Context, userAddress string, userSignHash string, userNonce string) {
 	messages := [1][2]Message{}
 	messages[0][0].Type = "string"
-	messages[0][0].Value = "/ftfish0.json"
+	messages[0][0].Value = "/ftfish1.json"
 	messages[0][1].Type = "bytes"
 	messages[0][1].Value = userSignHash
 	response, err := (*client.BinderClient()).Call(c.Background(), "contract_soliditySHA3", messages)
@@ -122,7 +122,7 @@ func ContractSoliditySHA3(context *gin.Context, userAddress string, userSignHash
 	}
 }
 
-// func VksSignMessage(context *gin.Context, userAddress string, userSignHash string, soliditySHA3 string) {
+// func VksSignMessage(context *gin.Context, userAddress string, userSignHash string, userNonce string, soliditySHA3 string) {
 // 	response, err := (*client.VKSClient()).Call(c.Background(), "sign_signMessage", soliditySHA3)
 // 	if err != nil {
 // 		fmt.Println("VksSignMessage err ", err.Error())
@@ -202,8 +202,8 @@ func TxSendUnsignedTx(context *gin.Context, fee string, userAddress string, user
 		fee,
 		userAddress,
 		nonce,
-		"false",
-		"/ftfish0.json",
+		"true",
+		"/ftfish1.json",
 		userSign,
 		vksSign,
 	}
